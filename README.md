@@ -43,21 +43,21 @@ PUT /latest/api/token
 
 Metadata:
 
-GET /latest/meta-data/
-GET /latest/meta-data/hostname
-GET /latest/meta-data/instance-id
-GET /latest/meta-data/local-hostname
-GET /latest/meta-data/local-ipv4
-GET /latest/meta-data/mac
-GET /latest/meta-data/network/
-GET /latest/meta-data/placement/
-GET /latest/meta-data/public-hostname
-GET /latest/meta-data/public-ipv4
-GET /latest/meta-data/public-keys/
-GET /latest/meta-data/public-keys/<index>/
-GET /latest/meta-data/public-keys/<index>/openssh-key
+1. GET /latest/meta-data/
+1. GET /latest/meta-data/hostname
+1. GET /latest/meta-data/instance-id
+1. GET /latest/meta-data/local-hostname
+1. GET /latest/meta-data/local-ipv4
+1. GET /latest/meta-data/mac
+1. GET /latest/meta-data/network/
+1. GET /latest/meta-data/placement/
+1. GET /latest/meta-data/public-hostname
+1. GET /latest/meta-data/public-ipv4
+1. GET /latest/meta-data/public-keys/
+1. GET /latest/meta-data/public-keys/<index>/
+1. GET /latest/meta-data/public-keys/<index>/openssh-key
 
-# IMDSv2 Token Flow
+## IMDSv2 Token Flow
 
 The server implements the IMDSv2 session-oriented flow:
 
@@ -136,7 +136,7 @@ Returned when:
 
 Returned if an unexpected exception occurs (optional, depending on implementation).
 
-Intended Use
+# Intended Use
 
 This server is designed for:
 
@@ -157,27 +157,27 @@ The implementation is intentionally simple to make behavior predictable and easy
 
 # How to test
 
-Test using `curl`.
+## Test using `curl`.
 
-Connect without token (answer must be 401)
+### Connect without token (answer must be 401)
 ```sh
 curl -v http://127.0.0.1:8000/latest/meta-data/instance-id
 ```
 
-Get token
+### Get token
 ```sh
 TOKEN=$(curl -X PUT \
   -H "X-aws-ec2-metadata-token-ttl-seconds: 60" \
   http://127.0.0.1:8000/latest/api/token)
 ```
 
-get instance-id
+### Get instance-id
 ```sh
 curl -H "X-aws-ec2-metadata-token: $TOKEN" \
   http://127.0.0.1:8000/latest/meta-data/instance-id
 ```
 
-Check SSH keys
+### Check SSH keys
 ```sh
 curl -H "X-aws-ec2-metadata-token: $TOKEN" \
   http://127.0.0.1:8000/latest/meta-data/public-keys/
@@ -188,7 +188,7 @@ curl -H "X-aws-ec2-metadata-token: $TOKEN" \
   http://127.0.0.1:8000/latest/meta-data/public-keys/0/openssh-key
 ```
 
-Test TTL
+### Test TTL
 ```sh
 TOKEN=$(curl -X PUT \
   -H "X-aws-ec2-metadata-token-ttl-seconds: 1" \
@@ -201,6 +201,22 @@ curl -H "X-aws-ec2-metadata-token: $TOKEN" \
 ```
 
 Code 401 must be returned.
+
+## Testing by getimds
+
+`getimds` utility provided with imds_mock.py server. It queries all IMDS resources in cycle and outputs them.
+
+Run in test environment.
+```sh
+python3 imds_mock.py --config config.json --host 127.0.0.1 --port 8000
+getimds 127.0.0.1:8000
+```
+
+Run in real environment (with server on 69.254.169.254available).
+```sh
+getimds
+```
+
 
 # Links
 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
