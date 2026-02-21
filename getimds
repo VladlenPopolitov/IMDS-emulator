@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# Copyrigth(c) 2026 Vladlen Popolitov vladlen@FreeBSD.org
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# Debug environment with imds_mock server
+# # python3 imds_mock.py --config config.json --host 127.0.0.1 --port 8000
+# # getimds 127.0.0.1:8000
+#
+# or in real environment
+# # getimds
+
+
+ADDR="${1:-169.254.169.254}"
+
+#TOKEN=$(curl -s -X PUT \
+#  http://169.254.169.254/latest/api/token \
+#  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+TOKEN=$(curl -s -X PUT \
+  http://$ADDR/latest/api/token \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+dump()
+{
+    path=$1
+    curl    -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://$ADDR/latest/meta-data/$path
+}
+
+dump_user_data()
+{
+
+    curl    -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://$ADDR/latest/user-data
+}
+
+walk() {
+    for item in $(dump "$1"); do
+        case "$item" in
+            */)
+                walk "$1$item"
+                ;;
+            *)
+                echo "==== $1$item ===="
+                dump "$1$item"
+                echo
+                ;;
+        esac
+    done
+}
+
+walk ""
+echo "==== /latest/user-data ===="
+dump_user_data
+

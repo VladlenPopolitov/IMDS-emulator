@@ -1,0 +1,26 @@
+{
+  "instance_id": "i-1234567890",
+  "hostname": "test-vm",
+  "public_hostname": "192.168.199.199",
+  "local_hostname": "test-vm",
+  "local_ipv4": "10.0.0.10",
+  "public_ipv4": "192.168.199.199",
+  "mac": "02:00:00:00:00:01",
+
+  "account_id": "123456789012",
+  "region": "antarctica-1",
+  "availability_zone": "antarc-north-1z",
+  "instance_type": "a1.pinguin",
+  "architecture": "x86_64",
+
+  "ssh_public_keys": [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDkey1",
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIkey2"
+  ],
+
+  "user_data": "#cloud-config\nhostname: test-vm\nssh_pwauth: no\nusers:\n- name: connect\n  sudo: ALL=(ALL) NOPASSWD:ALL\n  shell: /bin/sh\n  ssh_authorized_keys:\n  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII09srKGDwCQepHQnWk1tS8Zpublickey connect",
+
+  "default_delay_ms": 0,
+  "endpoint_delay_ms": {},
+  "force_status": {}
+}
