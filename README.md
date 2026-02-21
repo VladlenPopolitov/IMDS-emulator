@@ -35,8 +35,8 @@ Metadata:
 1. GET /latest/meta-data/public-hostname
 1. GET /latest/meta-data/public-ipv4
 1. GET /latest/meta-data/public-keys/
-1. GET /latest/meta-data/public-keys/<index>/
-1. GET /latest/meta-data/public-keys/<index>/openssh-key
+1. GET /latest/meta-data/public-keys/0/
+1. GET /latest/meta-data/public-keys/0/openssh-key
 
 ## IMDSv2 Token Flow
 
