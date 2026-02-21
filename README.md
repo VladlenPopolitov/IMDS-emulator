@@ -16,25 +16,6 @@ Test in jail / VM:
 python3 imds_mock.py --config config.json --host 169.254.169.254 --port 80
 ```
 
-
-# Supported Endpoints
-
-The following endpoints are currently supported:
-
-/latest/meta-data/
-
-Returns a basic listing of available metadata keys (depending on implementation).
-
-/latest/meta-data/public-keys/
-
-Returns a list of available SSH public key indexes.
-
-/latest/meta-data/public-keys/<index>/openssh-key
-
-Returns the OpenSSH public key corresponding to the given numeric index.
-
-The index must be a zero-based integer. If the index is invalid or does not exist, the server returns HTTP 404.
-
 # Supported Endpoints
 
 IMDSv2:
