@@ -95,25 +95,25 @@ Each list element of `ssh_public_keys` corresponds to its numeric index in the U
 
 # Response Codes
 
-## 200 OK
+### 200 OK
 
 Returned when a valid metadata key or SSH public key is found.
 
-## 404 Not Found
+### 404 Not Found
 
 Returned when:
 1. The requested path is not supported
 1. The public key index is invalid
 1. The key does not exist
 
-## 401 Unauthorized
+### 401 Unauthorized
 
 Returned when:
 
 1. IMDSv2 token is missing
 1. IMDSv2 token is invalid or expired
 
-## 500 Internal Server Error
+### 500 Internal Server Error
 
 Returned if an unexpected exception occurs (optional, depending on implementation).
 
@@ -203,7 +203,7 @@ getimds
 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
 https://seifrajhi.github.io/blog/instance-security-imdsv1-vs-v2/
 
-# Copyrigth
+# Copyright
 
 Copyrigth(c) 2026 Vladlen Popolitov vladlen@FreeBSD.org
 
