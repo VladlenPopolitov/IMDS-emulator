@@ -11,12 +11,7 @@
 # or in real environment
 # # getimds
 
-
 ADDR="${1:-169.254.169.254}"
-
-#TOKEN=$(curl -s -X PUT \
-#  http://169.254.169.254/latest/api/token \
-#  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 
 TOKEN=$(curl -s -X PUT \
   http://$ADDR/latest/api/token \
@@ -25,24 +20,22 @@ TOKEN=$(curl -s -X PUT \
 dump()
 {
     path=$1
-    curl    -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://$ADDR/latest/meta-data/$path
-}
-
-dump_user_data()
-{
-
-    curl    -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://$ADDR/latest/user-data
+    if [ $2 = 1 ]; then
+        curl    -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://$ADDR/latest/$path | sed 's/=/%3D/g' | sed 's/ /%20/g'
+    else
+        curl    -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://$ADDR/latest/$path
+    fi
 }
 
 walk() {
-    for item in $(dump "$1"); do
+    for item in $(dump "$1" 1 ); do
         case "$item" in
             */)
                 walk "$1$item"
                 ;;
             *)
-                echo "==== $1$item ===="
-                dump "$1$item"
+                echo "==== $1$item ====" | sed 's/%3D/=/g' | sed 's/%20/ /g'
+                dump "$1$item" 0
                 echo
                 ;;
         esac
@@ -50,6 +43,5 @@ walk() {
 }
 
 walk ""
-echo "==== /latest/user-data ===="
-dump_user_data
+
 

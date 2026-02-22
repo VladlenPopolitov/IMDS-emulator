@@ -15,7 +15,7 @@ import secrets
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 import traceback
 
@@ -109,7 +109,7 @@ class IMDSHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        path = parsed.path
+        path = unquote(parsed.path)
         cfg = self.server.config
 
         self._delay(path)
@@ -125,6 +125,19 @@ class IMDSHandler(BaseHTTPRequestHandler):
                 return
 
         # -------- instance identity --------
+
+        if path == "/latest/dynamic/":
+            self._send(200, "instance-identity/")
+            return
+
+        if path == "/latest/dynamic/instance-identity/":
+            entries = [
+                "document",
+                "signature",
+            ]
+            self._send(200, "\n".join(entries))
+            return
+
 
         if path == "/latest/dynamic/instance-identity/document":
             doc = {
@@ -143,6 +156,15 @@ class IMDSHandler(BaseHTTPRequestHandler):
             return
 
         # -------- meta-data listing --------
+
+        if path == "/latest/":
+            entries = [
+                "meta-data/",
+                "user-data",
+                "dynamic/",
+            ]
+            self._send(200, "\n".join(entries))
+            return
 
         if path == "/latest/meta-data/":
             entries = [
@@ -207,7 +229,7 @@ class IMDSHandler(BaseHTTPRequestHandler):
             if not keys:
                 self._send(404)
                 return
-            indices = "\n".join(str(i)+'/' for i in range(len(keys)))
+            indices = "\n".join(str(i)+' = username'+ str(i)+'/' for i in range(len(keys)))
             self._send(200, indices)
             return
 
@@ -215,7 +237,7 @@ class IMDSHandler(BaseHTTPRequestHandler):
                 and not path.endswith("/openssh-key"):
             parts = path.split("/")
             try:
-                idx = int(parts[4])
+                idx = int(parts[4].split()[0]) # emulate numbers like "0", "0 = username"
                 key = cfg.get("ssh_public_keys", [])[idx]
                 self._send(200, "openssh-key")
             except (ValueError, IndexError):
@@ -228,7 +250,7 @@ class IMDSHandler(BaseHTTPRequestHandler):
                 and path.endswith("/openssh-key"):
             parts = path.split("/")
             try:
-                idx = int(parts[4])
+                idx = int(parts[4].split()[0]) # emulate numbers like "0", "0 = username"
                 key = cfg.get("ssh_public_keys", [])[idx]
                 self._send(200, key)
             except (ValueError, IndexError):
@@ -253,15 +275,53 @@ class IMDSHandler(BaseHTTPRequestHandler):
             return
 
         if path == f"/latest/meta-data/network/interfaces/macs/{mac}/":
-            self._send(200, "device-number\nlocal-ipv4s")
-            return
+            entries = [
+                "device-number",
+                "local-ipv4s",
+                "mac",
+                "local-hostname",
+            ]
+
+            values = cfg.get("mac_public_ipv4")
+            if isinstance(values, list) and values:
+                entries.append("public-ipv4s")
+
+            if "mac_subnet_ipv4_cidr_block" in cfg:
+                entries.append("subnet-ipv4-cidr-block")
+
+            self._send(200, "\n".join(entries))
 
         if path == f"/latest/meta-data/network/interfaces/macs/{mac}/device-number":
             self._send(200, "0")
             return
 
         if path == f"/latest/meta-data/network/interfaces/macs/{mac}/local-ipv4s":
+            # The private IPv4 addresses associated with the interface.
+            # If this is an IPv6-only network interface, this item is not set
+            # and results in an HTTP 404 response. (AWS documentation)
             self._send(200, cfg.get("local_ipv4", ""))
+            return
+
+        if path == f"/latest/meta-data/network/interfaces/macs/{mac}/mac":
+            self._send(200, mac)
+            return
+
+        if path == f"/latest/meta-data/network/interfaces/macs/{mac}/local-hostname":
+            self._send(200, cfg.get("local_hostname", ""))
+            return
+
+        if path == f"/latest/meta-data/network/interfaces/macs/{mac}/public-ipv4s":
+            entries = [ ]
+
+            values = cfg.get("mac_public_ipv4")
+            if isinstance(values, list) and values:
+                entries.extend(values)
+
+            self._send(200, "\n".join(entries))
+            return
+
+        if path == f"/latest/meta-data/network/interfaces/macs/{mac}/subnet-ipv4-cidr-block":
+            self._send(200, cfg.get("mac_subnet_ipv4_cidr_block", ""))
             return
 
         # -------- user-data --------

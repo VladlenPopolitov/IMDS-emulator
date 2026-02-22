@@ -31,12 +31,20 @@ Metadata:
 1. GET /latest/meta-data/local-ipv4
 1. GET /latest/meta-data/mac
 1. GET /latest/meta-data/network/
+1. GET /latest/meta-data/network/interfaces/macs/MAC.../mac
+1. GET /latest/meta-data/network/interfaces/macs/MAC.../device-number
+1. GET /latest/meta-data/network/interfaces/macs/MAC.../local-ipv4s
+1. GET /latest/meta-data/network/interfaces/macs/MAC.../local-hostname
+1. GET /latest/meta-data/network/interfaces/macs/MAC.../public-ipv4s
+1. GET /latest/meta-data/network/interfaces/macs/MAC.../subnet-ipv4-cidr-block
 1. GET /latest/meta-data/placement/
 1. GET /latest/meta-data/public-hostname
 1. GET /latest/meta-data/public-ipv4
 1. GET /latest/meta-data/public-keys/
 1. GET /latest/meta-data/public-keys/0/
 1. GET /latest/meta-data/public-keys/0/openssh-key
+1. GET /latest/dynamic/instance-identity/document
+1. GET /latest/dynamic/instance-identity/signature
 
 ## IMDSv2 Token Flow
 
@@ -137,6 +145,21 @@ It is not intended for production use. The server implements IMDSv2 token flow b
 The implementation is intentionally simple to make behavior predictable and easy to debug.
 
 # How to test
+
+## Test using pytest
+
+### Install pytest
+```sh
+python3 -m venv testenv
+source testenv/bin/activate
+python3 -m pip install pytest requests
+
+```
+
+### Run pytest
+```sh
+PYTHONPATH=. pytest -v
+```
 
 ## Test using `curl`.
 

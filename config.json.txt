@@ -1,28 +1,37 @@
-==== instance-id ====
+==== meta-data/instance-id ====
 i-1234567890
-==== hostname ====
+==== meta-data/hostname ====
 test-vm
-==== local-hostname ====
+==== meta-data/local-hostname ====
 test-vm
-==== public-hostname ====
+==== meta-data/public-hostname ====
 192.168.199.199
-==== local-ipv4 ====
+==== meta-data/local-ipv4 ====
 10.0.0.10
-==== public-ipv4 ====
+==== meta-data/public-ipv4 ====
 192.168.199.199
-==== mac ====
+==== meta-data/mac ====
 02:00:00:00:00:01
-==== placement/availability-zone ====
+==== meta-data/placement/availability-zone ====
 antarc-north-1z
-==== public-keys/0/openssh-key ====
+==== meta-data/public-keys/0 = username0/openssh-key ====
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDkey1
-==== public-keys/1/openssh-key ====
+==== meta-data/public-keys/1 = username1/openssh-key ====
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIkey2
-==== network/interfaces/macs/02:00:00:00:00:01/device-number ====
+==== meta-data/network/interfaces/macs/02:00:00:00:00:01/device-number ====
 0
-==== network/interfaces/macs/02:00:00:00:00:01/local-ipv4s ====
+==== meta-data/network/interfaces/macs/02:00:00:00:00:01/local-ipv4s ====
 10.0.0.10
-==== /latest/user-data ====
+==== meta-data/network/interfaces/macs/02:00:00:00:00:01/mac ====
+02:00:00:00:00:01
+==== meta-data/network/interfaces/macs/02:00:00:00:00:01/local-hostname ====
+test-vm
+==== meta-data/network/interfaces/macs/02:00:00:00:00:01/public-ipv4s ====
+192.168.199.199
+192.168.199.200
+==== meta-data/network/interfaces/macs/02:00:00:00:00:01/subnet-ipv4-cidr-block ====
+192.168.199.0/24
+==== user-data ====
 #cloud-config
 hostname: test-vm
 ssh_pwauth: no
@@ -32,3 +41,7 @@ users:
   shell: /bin/sh
   ssh_authorized_keys:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII09srKGDwCQepHQnWk1tS8Zpublickey connect
+==== dynamic/instance-identity/document ====
+{"instanceId": "i-1234567890", "accountId": "123456789012", "availabilityZone": "antarc-north-1z", "region": "antarctica-1", "architecture": "x86_64", "instanceType": "a1.pinguin"}
+==== dynamic/instance-identity/signature ====
+FAKE_SIGNATURE
