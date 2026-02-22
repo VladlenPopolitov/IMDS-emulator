@@ -146,7 +146,7 @@ The implementation is intentionally simple to make behavior predictable and easy
 
 # How to test
 
-## Test using pytest
+## Test using `pytest`
 
 ### Install pytest
 ```sh
@@ -166,6 +166,62 @@ Run with server output
 ```sh
 PYTHONPATH=. pytest -v --capture=no
 ```
+
+## Test using `fetch`.
+
+### Connect without token (answer must be 401)
+```sh
+fetch -i -o - \
+  http://127.0.0.1:8000/latest/meta-data/instance-id
+```
+
+### Get token
+```sh
+TOKEN=$(fetch -q -o - \
+  --method=PUT \
+  --header="X-aws-ec2-metadata-token-ttl-seconds: 60" \
+  http://127.0.0.1:8000/latest/api/token)
+
+echo "$TOKEN"
+```
+
+### Get instance-id
+```sh
+fetch -q -o - \
+  --header="X-aws-ec2-metadata-token: $TOKEN" \
+  http://127.0.0.1:8000/latest/meta-data/instance-id
+```
+
+### Check SSH keys
+```sh
+fetch -q -o - \
+  --header="X-aws-ec2-metadata-token: $TOKEN" \
+  http://127.0.0.1:8000/latest/meta-data/public-keys/
+```
+
+Get key 0
+```sh
+fetch -q -o - \
+  --header="X-aws-ec2-metadata-token: $TOKEN" \
+  http://127.0.0.1:8000/latest/meta-data/public-keys/0/openssh-key
+```
+
+### Test TTL
+```sh
+TOKEN=$(fetch -q -o - \
+  --method=PUT \
+  --header="X-aws-ec2-metadata-token-ttl-seconds: 1" \
+  http://127.0.0.1:8000/latest/api/token)
+
+sleep 2
+
+fetch -i -o - \
+  --header="X-aws-ec2-metadata-token: $TOKEN" \
+  http://127.0.0.1:8000/latest/meta-data/instance-id
+```
+
+Code 401 must be returned.
+
 
 ## Test using `curl`.
 
@@ -212,7 +268,7 @@ curl -H "X-aws-ec2-metadata-token: $TOKEN" \
 
 Code 401 must be returned.
 
-## Testing by getimds
+## Test using by `getimds`
 
 `getimds` utility provided with imds_mock.py server. It queries all IMDS resources in cycle and outputs them.
 
