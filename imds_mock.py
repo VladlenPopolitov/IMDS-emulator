@@ -120,9 +120,10 @@ class IMDSHandler(BaseHTTPRequestHandler):
             return
 
         if path.startswith("/latest/"):
-            if not self._validate_token():
-                self._send(401)
-                return
+            if cfg.get("imdsv2_required", True):
+                if not self._validate_token():
+                    self._send(401)
+                    return
 
         # -------- instance identity --------
 

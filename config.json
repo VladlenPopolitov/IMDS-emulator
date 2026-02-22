@@ -1,4 +1,6 @@
 {
+  "imdsv2_required": true,
+
   "instance_id": "i-1234567890",
   "hostname": "test-vm",
   "public_hostname": "192.168.199.199",

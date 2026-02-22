@@ -60,6 +60,7 @@ def get_token(base_url):
 
 def test_basic_metadata(start_server):
     config = {
+        "imdsv2_required": "true",
         "instance_id": "i-123456",
         "local_ipv4": "10.0.0.10",
     }
@@ -82,6 +83,7 @@ def test_basic_metadata(start_server):
 
 def test_public_keys_present(start_server):
     config = {
+        "imdsv2_required": "true",
         "ssh_public_keys": ["ssh-rsa TESTKEY1", "ssh-ed25519 TESTKEY2"]
     }
 
@@ -110,7 +112,7 @@ def test_public_keys_present(start_server):
 # ==========================================================
 
 def test_public_keys_missing(start_server):
-    config = {}
+    config = {"imdsv2_required": "true",}
 
     base_url = start_server(config)
     token = get_token(base_url)
@@ -127,14 +129,27 @@ def test_public_keys_missing(start_server):
 # 4 IMDSv2 token required
 # ==========================================================
 
-def test_token_required(start_server):
-    config = {}
+def test_token_required_yes(start_server):
+    config = {
+        "imdsv2_required": True,
+        "instance_id": "i-123456",
+        }
 
     base_url = start_server(config)
 
     r = requests.get(f"{base_url}/latest/meta-data/instance-id")
 
     assert r.status_code == 401
+
+def test_token_required_no(start_server):
+    config = {"imdsv2_required": False,
+              "instance_id": "i-123456",}
+
+    base_url = start_server(config)
+
+    r = requests.get(f"{base_url}/latest/meta-data/instance-id")
+
+    assert r.status_code == 200
 
 
 # ==========================================================

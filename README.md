@@ -157,8 +157,14 @@ python3 -m pip install pytest requests
 ```
 
 ### Run pytest
+
 ```sh
 PYTHONPATH=. pytest -v
+```
+
+Run with server output
+```sh
+PYTHONPATH=. pytest -v --capture=no
 ```
 
 ## Test using `curl`.
