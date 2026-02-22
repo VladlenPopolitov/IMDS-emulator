@@ -72,6 +72,8 @@ The server reads parameters from the configuration structure:
 Example:
 ```json
 {
+  "imdsv2_required": true,
+
   "instance_id": "i-1234567890",
   "hostname": "test-vm",
   "public_hostname": "192.168.199.199",
@@ -79,6 +81,8 @@ Example:
   "local_ipv4": "10.0.0.10",
   "public_ipv4": "192.168.199.199",
   "mac": "02:00:00:00:00:01",
+  "mac_public_ipv4": ["192.168.199.199","192.168.199.200"],
+  "mac_subnet_ipv4_cidr_block": "192.168.199.0/24",
 
   "account_id": "123456789012",
   "region": "antarctica-1",
